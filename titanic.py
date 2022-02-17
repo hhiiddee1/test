@@ -64,16 +64,17 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.30, random
 
 X_test_set =df_test[predictors].values
 
-mlp = MLPClassifier(hidden_layer_sizes=(8,8), activation='relu', solver='adam', max_iter=500)
+mlp = MLPClassifier(hidden_layer_sizes=(8,8), activation='relu', solver='adam', max_iter=1000)
 mlp.fit(X_train,y_train)
 
 joblib.dump(mlp, 'model/model.joblib')
 mlp2 = joblib.load('model/model.joblib')
-print(X_test[1])
-predict_train = mlp2.predict(X_train)
-predict_test = mlp2.predict(X_test)
-predict_test_set = mlp2.predict(X_test_set)
-df_test_id['Survived'] = 0
-df_test_id['Survived'] = predict_test_set
-df_test_id.to_csv('predictions.csv')
-print(df_test_id)
+print([list(X_test[1])])
+predict_train = mlp2.predict([list(X_train[1])])
+predict_test = mlp2.predict([list(X_test[1])])
+predict_test_set = mlp2.predict([list(X_test_set[6])])
+print(predict_test_set)
+# df_test_id['Survived'] = 0
+# # df_test_id['Survived'] = predict_test_set
+# df_test_id.to_csv('predictions.csv')
+# print(df_test_id)
