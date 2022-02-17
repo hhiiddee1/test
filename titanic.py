@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import scipy
 import numpy as np
+import joblib
 sns.set()
 
 df = pd.read_csv('train.csv')
@@ -65,10 +66,13 @@ X_test_set =df_test[predictors].values
 
 mlp = MLPClassifier(hidden_layer_sizes=(8,8), activation='relu', solver='adam', max_iter=500)
 mlp.fit(X_train,y_train)
+
+joblib.dump(mlp, 'model/model.joblib')
+mlp2 = joblib.load('model/model.joblib')
 print(X_test[1])
-predict_train = mlp.predict(X_train)
-predict_test = mlp.predict(X_test)
-predict_test_set = mlp.predict(X_test_set)
+predict_train = mlp2.predict(X_train)
+predict_test = mlp2.predict(X_test)
+predict_test_set = mlp2.predict(X_test_set)
 df_test_id['Survived'] = 0
 df_test_id['Survived'] = predict_test_set
 df_test_id.to_csv('predictions.csv')
