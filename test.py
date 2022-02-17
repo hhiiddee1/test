@@ -12,6 +12,7 @@ def login_table(id_name_verified, id_password):
     id_name_verified['password'] = ''
     #for password in id_password:
     #    id_name_verified.loc['']
+    #lol
     print(id_name_verified)
     id_name_verified.loc[id_name_verified['']
 
