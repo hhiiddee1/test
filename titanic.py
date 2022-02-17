@@ -1,13 +1,10 @@
 import pandas as pd
-from sklearn.model_selection import train_test_split
-from sklearn.neural_network import MLPClassifier
-from sklearn.metrics import classification_report,confusion_matrix
 import matplotlib.pyplot as plt
 import seaborn as sns
 import scipy
 import numpy as np
 import joblib
-sns.set()
+import sklearn
 
 df = pd.read_csv('train.csv')
 df_test = pd.read_csv('test.csv')
@@ -60,11 +57,11 @@ predictors_test = list(set(list(df.columns))-set(['Age_id']))
 
 X = df[predictors].values
 y = df[target_column].values
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.30, random_state=40)
+X_train, X_test, y_train, y_test = sklearn.model_selection.train_test_split(X, y, test_size=0.30, random_state=40)
 
 X_test_set =df_test[predictors].values
 
-mlp = MLPClassifier(hidden_layer_sizes=(8,8), activation='relu', solver='adam', max_iter=1000)
+mlp = sklearn.neural_network.MLPClassifier(hidden_layer_sizes=(8,8), activation='relu', solver='adam', max_iter=1000)
 mlp.fit(X_train,y_train)
 
 joblib.dump(mlp, 'model/model.joblib')
