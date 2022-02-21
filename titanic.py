@@ -1,19 +1,18 @@
 import pandas as pd
-import matplotlib.pyplot as plt
-import seaborn as sns
+# import matplotlib.pyplot as plt
+# import seaborn as sns
 import scipy
 import numpy as np
 import joblib
+import dill
 from sklearn.model_selection import train_test_split
 from sklearn.neural_network import MLPClassifier
+import shap
 
 df = pd.read_csv('train.csv')
 df_test = pd.read_csv('test.csv')
-print(df)
 df = df.drop(['PassengerId', 'Name', 'Ticket', 'Cabin'],axis=1)
-# df_test_id = pd.DataFrame()
-# print(df_test_id)
-# df_test_id.index = df_test['PassengerId']
+df_test_id = pd.DataFrame(index = df_test['PassengerId'])
 df_test = df_test.drop(['PassengerId', 'Name', 'Ticket', 'Cabin'],axis=1)
 
 df['Sex'] = pd.factorize(df['Sex'])[0]
@@ -68,12 +67,33 @@ mlp.fit(X_train,y_train)
 
 joblib.dump(mlp, 'model/model.joblib')
 mlp2 = joblib.load('model/model.joblib')
-print([list(X_test[1])])
+
+
+test_data =[]
+for i in X_test_set:
+    test_data.append(list(i))
+    
+f = lambda test_data: mlp.predict(X_train)
+print(f)
+med=df.median()
+print(med)
+explainer = shap.KernelExplainer(mlp.predict, X_train)
+
+with open('explainer/explainer.pkl', 'wb') as f:
+    dill.dump(explainer, f)
+    
+with open('explainer/explainer.pkl', 'rb') as f:
+    explainer2 = dill.load(f)
+
+# print(test_data)
 predict_train = mlp2.predict([list(X_train[1])])
 predict_test = mlp2.predict([list(X_test[1])])
-predict_test_set = mlp2.predict([list(X_test_set[6])])
+predict_test_set = mlp2.predict(test_data)
+print(test_data[0])
+explainer_train = explainer.shap_values(X_test[1])
 print(predict_test_set)
-# df_test_id['Survived'] = 0
-# # df_test_id['Survived'] = predict_test_set
-# df_test_id.to_csv('predictions.csv')
-# print(df_test_id)
+print(explainer_train)
+df_test_id['Survived'] = 0
+# df_test_id['Survived'] = predict_test_set
+df_test_id.to_csv('predictions.csv')
+print(df_test_id)
